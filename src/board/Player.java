@@ -33,6 +33,9 @@ public class Player {
 
     public void addSticks(int moreSticks) {
         this.sticks = this.sticks + moreSticks;
+        for (int i=0;i<moreSticks;i++) {
+            this.d.add(new Stick());
+        }
     }
 
     public void removeSticks(int lessSticks) {
@@ -61,17 +64,20 @@ public class Player {
     }
 
     public boolean takeCardFromTheForest(int pos) {
+        int sticksUsed = 0;
+        int count = 0;
         if (h.size() < this.handlimit) {
             if (pos - this.sticks < 3) {
                 if (pos > 2) {
-                    this.sticks = (this.sticks - pos + 2);
-                    for (int i=0;i<this.d.size();i++) {
-                        if (this.d.getElementAt(i).getType().equals(CardType.STICK)) {
-                            this.d.removeElement(i);
+                    sticksUsed = pos - 2;
+                    this.sticks = (this.sticks - sticksUsed);
+                    while (sticksUsed > 0) {
+                        if (this.d.getElementAt(count).getName().equals("stick")) {
+                            this.d.removeElement(count);
+                            sticksUsed = sticksUsed - 1;
+                        } else {
+                            count = count + 1;
                         }
-                    }
-                    for (int i=0;i<this.sticks;i++) {
-                        this.d.add(new Stick());
                     }
                 }
                 if (Board.getForest().getElementAt(pos).getType().equals(CardType.BASKET)) {
@@ -101,18 +107,37 @@ public class Player {
                 }
             }
             if (Board.getDecayPile().size() <= 3 && basketCount > 0) {
+                if (h.size() >= this.handlimit + 2) {
+                    return false;
+                }
                 for (Card card: Board.getDecayPile()) {
                     addCardtoHand(card);
                 }
                 Board.getDecayPile().clear();
                 return true;
             }
-            if (Board.getDecayPile().size() == 4 && basketCount > 1) {
-                for (Card card: Board.getDecayPile()) {
-                    addCardtoHand(card);
+            if (Board.getDecayPile().size() == 4) {
+                if (basketCount > 1) {
+                    for (Card card: Board.getDecayPile()) {
+                        addCardtoHand(card);
+                    }
+                    Board.getDecayPile().clear();
+                    return true;
                 }
-                Board.getDecayPile().clear();
-                return true;
+                if (h.size() + 3 <= this.handlimit + 2 && basketCount > 0) {
+                    for (Card card: Board.getDecayPile()) {
+                        addCardtoHand(card);
+                    }
+                    Board.getDecayPile().clear();
+                    return true;
+                }
+            }
+            if (h.size() + Board.getDecayPile().size() <= this.handlimit + 2 && basketCount > 0) {
+              for (Card card: Board.getDecayPile()) {
+                  addCardtoHand(card);
+              }
+              Board.getDecayPile().clear();
+              return true;
             }
         }
         return false;
@@ -139,10 +164,13 @@ public class Player {
         int chanterelleDayCount = 0;
         int chanterelleNightCount = 0;
         int morelDayCount = 0;
+        int morelNightCount = 0;
         int mushroomCount = 0;
         int cardCount = 0;
         int butterCount = 0;
         int ciderCount = 0;
+        String mushroomName = "default";
+
         for (Card card: cards) {
             if (card.getType().equals(CardType.PAN)) {
                 this.d.add(card);
@@ -165,12 +193,26 @@ public class Player {
                         } else {
                             honeyfungusNightCount = honeyfungusNightCount + 1;
                         }
+                        if (!mushroomName.equals("honeyfungus")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "honeyfungus";
+                            } else {
+                                return false;
+                            }
+                        }
                         break;
                     case "treeear":
                         if (card.getType().equals(CardType.DAYMUSHROOM)) {
                             treeearDayCount = treeearDayCount + 1;
                         } else {
                             treeearNightCount = treeearNightCount + 1;
+                        }
+                        if (!mushroomName.equals("treeear")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "treeear";
+                            } else {
+                                return false;
+                            }
                         }
                         break;
                     case "lawyerswig":
@@ -179,12 +221,26 @@ public class Player {
                         } else {
                             lawyerswigNightCount = lawyerswigNightCount + 1;
                         }
+                        if (!mushroomName.equals("lawyerswig")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "lawyerswig";
+                            } else {
+                                return false;
+                            }
+                        }
                         break;
                     case "shiitake":
                         if (card.getType().equals(CardType.DAYMUSHROOM)) {
                             shiitakeDayCount = shiitakeDayCount + 1;
                         } else {
                             shiitakeNightCount = shiitakeNightCount + 1;
+                        }
+                        if (!mushroomName.equals("shiitake")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "shiitake";
+                            } else {
+                                return false;
+                            }
                         }
                         break;
                     case "henofwoods":
@@ -193,12 +249,26 @@ public class Player {
                         } else {
                             henofwoodsNightCount = henofwoodsNightCount + 1;
                         }
+                        if (!mushroomName.equals("henofwoods")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "henofwoods";
+                            } else {
+                                return false;
+                            }
+                        }
                         break;
                     case "birchbolete":
                         if (card.getType().equals(CardType.DAYMUSHROOM)) {
                             birchboleteDayCount = birchboleteDayCount + 1;
                         } else {
                             birchboleteNightCount = birchboleteNightCount + 1;
+                        }
+                        if (!mushroomName.equals("birchbolete")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "birchbolete";
+                            } else {
+                                return false;
+                            }
                         }
                         break;
                     case "porcini":
@@ -207,6 +277,13 @@ public class Player {
                         } else {
                             porciniNightCount = porciniNightCount + 1;
                         }
+                        if (!mushroomName.equals("porcini")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "porcini";
+                            } else {
+                                return false;
+                            }
+                        }
                         break;
                     case "chanterelle":
                         if (card.getType().equals(CardType.DAYMUSHROOM)) {
@@ -214,9 +291,27 @@ public class Player {
                         } else {
                             chanterelleNightCount = chanterelleNightCount + 1;
                         }
+                        if (!mushroomName.equals("chanterelle")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "chanterelle";
+                            } else {
+                                return false;
+                            }
+                        }
                         break;
                     case "morel":
-                        morelDayCount = morelDayCount + 1;
+                        if (card.getType().equals(CardType.DAYMUSHROOM)) {
+                            morelDayCount = morelDayCount + 1;
+                        } else {
+                            morelNightCount = morelNightCount + 1;
+                        }
+                        if (!mushroomName.equals("morel")) {
+                            if (mushroomName.equals("default")) {
+                                mushroomName = "morel";
+                            } else {
+                                return false;
+                            }
+                        }
                         break;
                     case "butter":
                         butterCount = butterCount + 1;
@@ -404,9 +499,9 @@ public class Player {
                     }
                 }
             }
-            if (morelDayCount > 2) {
-                cardCount = morelDayCount;
-                mushroomCount = morelDayCount;
+            if (morelDayCount+(2*morelNightCount) > 2) {
+                cardCount = morelDayCount + morelNightCount;
+                mushroomCount = morelDayCount + (2*morelNightCount);
                 score = score + (6*mushroomCount);
                 mushroomsCooked = true;
                 for (int i=0;i<this.d.size();i++) {
@@ -468,13 +563,12 @@ public class Player {
 
         for (int i=0;i<this.h.size();i++) {
             if (this.h.getElementAt(i).getName().equals(mushroomName)) {
+                cardCount = cardCount + 1;
                 if (this.h.getElementAt(i).getType().equals(CardType.DAYMUSHROOM)) {
-                    cardCount = cardCount + 1;
                     mushroomCount = mushroomCount + 1;
                 }
                 if (this.h.getElementAt(i).getType().equals(CardType.NIGHTMUSHROOM))
                 {
-                    cardCount = cardCount + 1;
                     mushroomCount = mushroomCount + 2;
                 }
 
@@ -513,6 +607,15 @@ public class Player {
             for (int i=0;i<(quantity*sticksPerMushroom);i++) {
                 this.d.add(new Stick());
                 sticks = sticks + 1;
+            }
+            for (int i=0;i<this.h.size();i++) {
+                if (this.h.getElementAt(i).getName().equals(mushroomName)) {
+                    this.h.removeElement(i);
+                    cardCount = cardCount - 1;
+                }
+                if (cardCount == 0) {
+                    break;
+                }
             }
             for (int i=0;i<this.h.size();i++) {
                 if (this.h.getElementAt(i).getName().equals(mushroomName)) {
